@@ -7,12 +7,20 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
-        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        .button { background-color: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        h1 { color: #333; text-align: center; }
+        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .button { background-color: #007BFF; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
         .button:hover { background-color: #0056b3; }
-        .result { margin-top: 20px; }
-        .context { background-color: #f9f9f9; padding: 10px; border-left: 4px solid #007BFF; margin-top: 10px; border-radius: 4px; }
+        .result, .context { margin-top: 20px; padding: 15px; border-radius: 8px; }
+        .result { background-color: #eef5ff; }
+        .context { background-color: #f9f9f9; border-left: 4px solid #007BFF; }
+        .metrics-section { margin-top: 40px; padding: 20px; background-color: #f0f0f0; border-radius: 8px; display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: middle; }
+        th { background-color: #007BFF; color: white; }
+        .row-hidden { display: none; }
+        .expand-button { background: none; border: none; color: #007BFF; cursor: pointer; font-size: 12px; transition: 0.3s; padding: 5px; }
+        .expand-button:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -20,21 +28,83 @@
         <h1>Generador de Respuestas con T5</h1>
         <form method="POST">
             <label for="consulta">Ingresa tu consulta:</label>
-            <textarea name="consulta" id="consulta" placeholder="Escribe tu pregunta aquí...">{{ consulta }}</textarea>
+            <textarea name="consulta" id="consulta" placeholder="Escribe tu pregunta aquí...">{{ request.form.get('consulta', '') }}</textarea>
             <button type="submit" class="button">Generar Respuesta</button>
         </form>
-        
+
         {% if respuesta %}
         <div class="result">
             <h2>Respuesta Generada:</h2>
             <p>{{ respuesta }}</p>
         </div>
+        {% endif %}
 
+        {% if contexto %}
         <div class="context">
             <h3>Contexto Utilizado:</h3>
             <p>{{ contexto }}</p>
         </div>
         {% endif %}
+
+        <button class="button" onclick="toggleMetrics()">Mostrar/Ocultar Métricas</button>
+
+        {% if metricas %}
+        <div class="metrics-section" id="metrics">
+            <h2>Métricas de Evaluación</h2>
+            <table>
+                <tr>
+                    <th>Consulta</th>
+                    <th>Resp. Generada</th>
+                    <th>Resp. Esperada</th>
+                    <th>Precisión</th>
+                    <th>Recall</th>
+                    <th>F-score</th>
+                    <th>Acción</th>
+                </tr>
+                {% for query, data in metricas.items() %}
+                <tr class="summary-row">
+                    <td>{{ query[:30] }}...</td>
+                    <td>{{ data['respuesta_generada'][:30] }}...</td>
+                    <td>{{ data['respuesta_esperada'][:30] }}...</td>
+                    <td>{{ data['Precision']|round(3) }}</td>
+                    <td>{{ data['Recall']|round(3) }}</td>
+                    <td>{{ data['F-score']|round(3) }}</td>
+                    <td>
+                        <button class="expand-button" onclick="toggleRow(this)">Ver más</button>
+                    </td>
+                </tr>
+                <tr class="row-hidden">
+                    <td colspan="7">
+                        <strong>Consulta:</strong> {{ query }}<br>
+                        <strong>Resp. Generada:</strong> {{ data['respuesta_generada'] }}<br>
+                        <strong>Resp. Esperada:</strong> {{ data['respuesta_esperada'] }}<br>
+                        <strong>Precisión:</strong> {{ data['Precision']|round(3) }}<br>
+                        <strong>Recall:</strong> {{ data['Recall']|round(3) }}<br>
+                        <strong>F-score:</strong> {{ data['F-score']|round(3) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
     </div>
+
+    <script>
+        function toggleMetrics() {
+            var metrics = document.getElementById("metrics");
+            metrics.style.display = (metrics.style.display === "none" || metrics.style.display === "") ? "block" : "none";
+        }
+
+        function toggleRow(button) {
+            var row = button.closest("tr").nextElementSibling;
+            if (row.classList.contains("row-hidden")) {
+                row.classList.remove("row-hidden");
+                button.textContent = "Ver menos";
+            } else {
+                row.classList.add("row-hidden");
+                button.textContent = "Ver más";
+            }
+        }
+    </script>
 </body>
 </html>
