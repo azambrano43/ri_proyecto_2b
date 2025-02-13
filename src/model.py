@@ -2,6 +2,7 @@ from transformers import T5ForConditionalGeneration, T5Tokenizer
 from sentence_transformers import SentenceTransformer
 from database import buscar_documentos
 from preprocessing import preprocesar_texto
+import torch
 
 # Cargar modelos de procesamiento de lenguaje natural
 # - T5 para generación de texto
@@ -63,9 +64,10 @@ def handle_query(user_query):
     inputs = tokenizer_t5(entrada, return_tensors="pt", max_length=1024, truncation=True)
     
     # Generación de la respuesta utilizando T5 con configuración de hiperparámetros optimizados
-    output = modelo_t5.generate(
-        **inputs, max_length=250, min_length=50, num_beams=5, do_sample=False, length_penalty=1.2, repetition_penalty=1.1
-    )
+    with torch.no_grad():
+        output = modelo_t5.generate(
+            **inputs, max_length=250, min_length=50, num_beams=5, do_sample=False, length_penalty=1.2, repetition_penalty=1.1
+        )
     
     # Decodificación de la respuesta generada eliminando tokens especiales
     respuesta = tokenizer_t5.decode(output[0], skip_special_tokens=True)

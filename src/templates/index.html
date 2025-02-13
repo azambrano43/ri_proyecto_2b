@@ -4,32 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Respuestas</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        textarea { width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .button { background-color: #007BFF; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
-        .button:hover { background-color: #0056b3; }
-        .result, .context { margin-top: 20px; padding: 15px; border-radius: 8px; }
-        .result { background-color: #eef5ff; }
-        .context { background-color: #f9f9f9; border-left: 4px solid #007BFF; }
-        .metrics-section { margin-top: 40px; padding: 20px; background-color: #f0f0f0; border-radius: 8px; display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: middle; }
-        th { background-color: #007BFF; color: white; }
-        .row-hidden { display: none; }
-        .expand-button { background: none; border: none; color: #007BFF; cursor: pointer; font-size: 12px; transition: 0.3s; padding: 5px; }
-        .expand-button:hover { text-decoration: underline; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <script src="{{ url_for('static', filename='index.js') }}" defer></script>
 </head>
 <body>
     <div class="container">
         <h1>Generador de Respuestas con T5</h1>
-        <form method="POST">
-            <label for="consulta">Ingresa tu consulta:</label>
+        <form id="queryForm" method="POST">
+            
             <textarea name="consulta" id="consulta" placeholder="Escribe tu pregunta aquí...">{{ request.form.get('consulta', '') }}</textarea>
-            <button type="submit" class="button">Generar Respuesta</button>
+            <button type="submit" class="button" id="generateButton">Generar Respuesta</button>
         </form>
 
         {% if respuesta %}
@@ -39,12 +23,16 @@
         </div>
         {% endif %}
 
+
+        <button class="button" id="toggleContextButton" onclick="toggleContext()">Mostrar/Ocultar Contexto</button>
+
         {% if contexto %}
-        <div class="context">
+        <div class="context-section" id="contextSection" style="display:none;">
             <h3>Contexto Utilizado:</h3>
             <p>{{ contexto }}</p>
         </div>
         {% endif %}
+
 
         <button class="button" onclick="toggleMetrics()">Mostrar/Ocultar Métricas</button>
 
@@ -89,22 +77,13 @@
         {% endif %}
     </div>
 
-    <script>
-        function toggleMetrics() {
-            var metrics = document.getElementById("metrics");
-            metrics.style.display = (metrics.style.display === "none" || metrics.style.display === "") ? "block" : "none";
-        }
-
-        function toggleRow(button) {
-            var row = button.closest("tr").nextElementSibling;
-            if (row.classList.contains("row-hidden")) {
-                row.classList.remove("row-hidden");
-                button.textContent = "Ver menos";
-            } else {
-                row.classList.add("row-hidden");
-                button.textContent = "Ver más";
-            }
-        }
-    </script>
+    <!-- Popup de confirmación con animación de carga -->
+    <div id="backupPopup" class="popup" style="display:none;">
+        <div class="popup-content">
+            <h3>Generando respuesta...</h3>
+            <div class="loader"></div>
+            <p>Esto podría tardar unos segundos.</p>
+        </div>
+    </div>
 </body>
 </html>
