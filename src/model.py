@@ -6,8 +6,8 @@ from preprocessing import preprocesar_texto
 # Cargar modelos de procesamiento de lenguaje natural
 # - T5 para generación de texto
 # - SentenceTransformer para embeddings semánticos
-modelo_t5 = T5ForConditionalGeneration.from_pretrained("google/flan-t5-large")
-tokenizer_t5 = T5Tokenizer.from_pretrained("google/flan-t5-large", legacy=False)
+modelo_t5 = T5ForConditionalGeneration.from_pretrained("google/flan-t5-base")
+tokenizer_t5 = T5Tokenizer.from_pretrained("google/flan-t5-base", legacy=False)
 modelo_embeddings = SentenceTransformer("all-MiniLM-L6-v2")
 
 def handle_query(user_query):
