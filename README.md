@@ -101,13 +101,24 @@ Para detener la API, presiona **Ctrl + C** en la terminal donde se ejecuta `app.
 
 ```
 📂 ri_proyecto_2b
- ├── app.py                # API en Flask
- ├── database.py           # Manejo de base de datos en ChromaDB
- ├── preprocessing.py      # Preprocesamiento del corpus
- ├── model.py              # Modelo de generación con T5 (Flan-T5-Large)
- ├── calcular_metricas.py  # Evaluación del sistema
- ├── templates/            # Plantillas HTML para la interfaz web
- ├── static/               # Archivos estáticos (CSS, JS)
- ├── README.md             # Documentación del proyecto
+ ├── data/                 # Archivos de datos y corpus
+ ├── db/                   # Archivos de base de datos
+ ├── db_muestra/           # Datos de muestra para pruebas
+ ├── documentation/        # Documentación del proyecto
+ ├── notebooks/            # Notebooks para pruebas y análisis
+ ├── src/                  # Código fuente del proyecto
+ │   ├── static/           # Archivos estáticos (CSS, JS)
+ │   ├── templates/        # Plantillas HTML para la interfaz web
+ │   │   ├── index.html    # Página principal
+ │   ├── app.py            # API en Flask
+ │   ├── calcular.py       # Cálculo de métricas
+ │   ├── database.py       # Manejo de base de datos en ChromaDB
+ │   ├── datos_prueba.py   # Datos de prueba para evaluación
+ │   ├── main.py           # Script principal
+ │   ├── model.py          # Modelo de generación con T5 (Flan-T5-Large)
+ │   ├── preprocessing.py  # Preprocesamiento del corpus
+ │   ├── resultModeloG.py  # Evaluación de generación
+ ├── .gitignore            # Archivos ignorados en Git
+ ├── README.md             # Documentación principal del proyecto
  ├── requirements.txt      # Dependencias del proyecto
 ```
